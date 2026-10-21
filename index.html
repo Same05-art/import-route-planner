@@ -4,117 +4,143 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Import Route Planner</title>
-<meta name="description" content="Planification d'itinéraires d'importation et mise en relation avec des contacts transitaires en Afrique.">
+<meta name="description" content="Trouvez les meilleurs itinéraires d'importation et les contacts transitaires pour l'Afrique.">
 <style>
   :root {
-    --bg: #f8f9fb;
+    --bg: #f0f4ff;
     --surface: #ffffff;
-    --text: #111827;
-    --text-secondary: #6b7280;
-    --border: #e5e7eb;
-    --accent: #111827;
-    --accent-hover: #374151;
-    --muted: #f3f4f6;
+    --text: #1e1b4b;
+    --text-secondary: #64748b;
+    --border: #e0e7ff;
+    --primary: #4f46e5;
+    --primary-soft: #eef2ff;
+    --primary-dark: #3730a3;
+    --accent: #06b6d4;
+    --accent-soft: #ecfeff;
     --success: #059669;
-    --radius: 8px;
-    --shadow: 0 1px 2px rgba(0,0,0,0.04);
+    --success-soft: #d1fae5;
+    --warning: #d97706;
+    --warning-soft: #fef3c7;
+    --radius: 14px;
+    --shadow: 0 4px 20px rgba(79, 70, 229, 0.08);
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
   }
 
   [data-theme="dark"] {
-    --bg: #0c0c0e;
-    --surface: #161618;
-    --text: #f4f4f5;
-    --text-secondary: #a1a1aa;
-    --border: #27272a;
-    --accent: #f4f4f5;
-    --accent-hover: #d4d4d8;
-    --muted: #1c1c1f;
+    --bg: #0f0f1a;
+    --surface: #1a1a2e;
+    --text: #e0e7ff;
+    --text-secondary: #94a3b8;
+    --border: #2e2e4a;
+    --primary: #818cf8;
+    --primary-soft: #1e1b4b;
+    --primary-dark: #a5b4fc;
+    --accent: #22d3ee;
+    --accent-soft: #164e63;
     --success: #34d399;
-    --shadow: 0 1px 2px rgba(0,0,0,0.3);
+    --success-soft: #064e3b;
+    --warning: #fbbf24;
+    --warning-soft: #451a03;
+    --shadow: 0 4px 24px rgba(0,0,0,0.3);
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
     background: var(--bg);
     color: var(--text);
-    line-height: 1.5;
+    line-height: 1.55;
     font-size: 15px;
     -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
   }
 
   .container {
-    max-width: 640px;
+    max-width: 680px;
     margin: 0 auto;
-    padding: 0 20px 80px;
+    padding: 0 18px 90px;
   }
 
+  /* Header */
   header {
-    padding: 32px 0 24px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 32px;
+    padding: 28px 0 20px;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+    gap: 12px;
   }
 
-  header h1 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    letter-spacing: -0.02em;
+  .logo-block h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
-  header p {
+  .logo-block p {
     color: var(--text-secondary);
-    font-size: 0.875rem;
-    margin-top: 4px;
+    font-size: 0.85rem;
+    margin-top: 3px;
   }
 
   .theme-btn {
-    background: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
     border: 1px solid var(--border);
-    width: 36px;
-    height: 36px;
-    border-radius: var(--radius);
-    cursor: pointer;
+    background: var(--surface);
     color: var(--text-secondary);
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-size: 1rem;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: 0.15s;
+    flex-shrink: 0;
   }
 
   .theme-btn:hover {
-    border-color: var(--text-secondary);
+    border-color: var(--primary);
+    color: var(--primary);
   }
 
-  .search-box {
-    margin-bottom: 40px;
+  /* Search */
+  .search-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+    margin-bottom: 28px;
+    border: 1px solid var(--border);
   }
 
-  .search-box label {
+  .search-card label {
     display: block;
-    font-size: 0.8125rem;
-    font-weight: 500;
-    margin-bottom: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 10px;
     color: var(--text);
   }
 
   .search-input {
     width: 100%;
-    padding: 12px 14px;
-    font-size: 0.9375rem;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--surface);
+    padding: 14px 16px;
+    font-size: 1rem;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg);
     color: var(--text);
     outline: none;
-    transition: border-color 0.15s;
+    transition: border-color 0.15s, box-shadow 0.15s;
   }
 
   .search-input:focus {
-    border-color: var(--text);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px var(--primary-soft);
   }
 
   .search-input::placeholder {
@@ -122,278 +148,338 @@
   }
 
   .suggestions {
-    margin-top: 4px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--surface);
+    margin-top: 8px;
+    border-radius: 12px;
     overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--surface);
     display: none;
   }
 
-  .suggestions.show {
-    display: block;
-  }
+  .suggestions.show { display: block; }
 
   .suggestions button {
     display: block;
     width: 100%;
     text-align: left;
-    padding: 10px 14px;
+    padding: 12px 16px;
     border: none;
     background: none;
     color: var(--text);
-    font-size: 0.9375rem;
+    font-size: 0.95rem;
     cursor: pointer;
     border-bottom: 1px solid var(--border);
+    transition: background 0.12s;
   }
 
-  .suggestions button:last-child {
-    border-bottom: none;
-  }
-
-  .suggestions button:hover {
-    background: var(--muted);
-  }
+  .suggestions button:last-child { border-bottom: none; }
+  .suggestions button:hover { background: var(--primary-soft); color: var(--primary); }
 
   .error-msg {
     color: #dc2626;
-    font-size: 0.8125rem;
+    font-size: 0.82rem;
     margin-top: 8px;
+    min-height: 1.2em;
   }
 
-  .back-link {
-    display: inline-block;
-    color: var(--text-secondary);
-    font-size: 0.875rem;
-    text-decoration: none;
-    margin-bottom: 24px;
-    cursor: pointer;
+  /* Country page */
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--primary);
+    font-size: 0.9rem;
+    font-weight: 500;
     background: none;
     border: none;
+    cursor: pointer;
     padding: 0;
+    margin-bottom: 20px;
   }
 
-  .back-link:hover {
-    color: var(--text);
+  .back-btn:hover { text-decoration: underline; }
+
+  .country-hero {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    border-radius: var(--radius);
+    padding: 24px;
+    color: #fff;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow);
   }
 
-  .country-title {
+  .country-hero h2 {
     font-size: 1.5rem;
-    font-weight: 600;
-    letter-spacing: -0.02em;
+    font-weight: 700;
     margin-bottom: 4px;
   }
 
-  .country-meta {
-    color: var(--text-secondary);
-    font-size: 0.875rem;
-    margin-bottom: 32px;
+  .country-hero p {
+    opacity: 0.9;
+    font-size: 0.9rem;
   }
 
   .section-title {
-    font-size: 0.8125rem;
-    font-weight: 600;
+    font-size: 0.8rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
     color: var(--text-secondary);
-    margin-bottom: 12px;
-    margin-top: 32px;
+    margin: 28px 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
-  .card {
+  .section-title::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Route cards */
+  .route-card {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 16px 18px;
-    margin-bottom: 10px;
+    padding: 18px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+
+  .route-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
   }
 
   .route-path {
-    font-weight: 500;
-    font-size: 0.9375rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text);
     margin-bottom: 6px;
+    line-height: 1.4;
+  }
+
+  .route-path span {
+    color: var(--primary);
   }
 
   .route-note {
-    font-size: 0.8125rem;
+    font-size: 0.84rem;
     color: var(--text-secondary);
     margin-top: 6px;
   }
 
+  .tags {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
   .tag {
-    display: inline-block;
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    background: var(--muted);
-    padding: 2px 8px;
-    border-radius: 4px;
-    margin-right: 4px;
-    margin-top: 8px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: var(--primary-soft);
+    color: var(--primary);
+  }
+
+  .tag.warning {
+    background: var(--warning-soft);
+    color: var(--warning);
+  }
+
+  /* Contact cards */
+  .contact-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0 18px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow-sm);
   }
 
   .contact-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 16px;
-    padding: 14px 0;
+    gap: 14px;
+    padding: 16px 0;
     border-bottom: 1px solid var(--border);
   }
 
-  .contact-item:last-child {
-    border-bottom: none;
-  }
-
-  .contact-info {
-    flex: 1;
-  }
+  .contact-item:last-child { border-bottom: none; }
 
   .contact-label {
     font-size: 0.75rem;
     color: var(--text-secondary);
+    font-weight: 500;
     margin-bottom: 2px;
   }
 
   .contact-number {
-    font-size: 1rem;
-    font-weight: 500;
+    font-size: 1.05rem;
+    font-weight: 600;
     font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
   }
 
-  .wa-link {
+  .wa-btn {
     display: inline-flex;
     align-items: center;
-    font-size: 0.8125rem;
-    font-weight: 500;
-    color: var(--success);
+    gap: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #fff;
+    background: #25D366;
     text-decoration: none;
-    padding: 6px 12px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--surface);
+    padding: 8px 14px;
+    border-radius: 10px;
     white-space: nowrap;
+    transition: opacity 0.15s;
   }
 
-  .wa-link:hover {
-    border-color: var(--success);
-  }
+  .wa-btn:hover { opacity: 0.9; }
 
   .empty-state {
     color: var(--text-secondary);
-    font-size: 0.875rem;
-    padding: 12px 0;
+    font-size: 0.9rem;
+    padding: 16px;
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px dashed var(--border);
+    text-align: center;
   }
 
   .disclaimer {
     margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px solid var(--border);
-    font-size: 0.75rem;
-    color: var(--text-secondary);
+    padding: 16px;
+    background: var(--warning-soft);
+    border-radius: 12px;
+    font-size: 0.78rem;
+    color: var(--warning);
     line-height: 1.6;
   }
 
-  .admin-toggle {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 1px solid var(--border);
-    background: var(--surface);
+  .footer-credit {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 0.75rem;
     color: var(--text-secondary);
-    font-size: 0.875rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: var(--shadow);
   }
+
+  /* Admin */
+  .admin-btn {
+    position: fixed;
+    bottom: 22px;
+    right: 22px;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: none;
+    background: var(--primary);
+    color: #fff;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+    display: grid;
+    place-items: center;
+    z-index: 20;
+    transition: transform 0.15s;
+  }
+
+  .admin-btn:hover { transform: scale(1.08); }
 
   .admin-form label {
     display: block;
-    font-size: 0.8125rem;
-    font-weight: 500;
-    margin-bottom: 6px;
-    margin-top: 16px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin: 14px 0 6px;
   }
 
   .admin-form select,
   .admin-form input {
     width: 100%;
-    padding: 10px 12px;
-    font-size: 0.875rem;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--surface);
+    padding: 11px 14px;
+    font-size: 0.9rem;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
     color: var(--text);
   }
 
-  .btn {
+  .btn-primary {
     display: inline-block;
-    padding: 8px 16px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    border-radius: var(--radius);
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 10px;
     border: none;
     cursor: pointer;
-    background: var(--accent);
-    color: var(--bg);
+    background: var(--primary);
+    color: #fff;
     margin-top: 16px;
   }
 
-  .btn:hover {
-    background: var(--accent-hover);
-  }
+  .btn-primary:hover { background: var(--primary-dark); }
 
   .btn-danger {
     background: transparent;
     color: #dc2626;
     border: 1px solid var(--border);
-    padding: 4px 10px;
+    padding: 5px 12px;
     font-size: 0.75rem;
-    margin-top: 0;
+    border-radius: 8px;
+    cursor: pointer;
   }
 
-  .btn-danger:hover {
-    border-color: #dc2626;
-  }
+  .btn-danger:hover { border-color: #dc2626; }
 
   #toast {
     position: fixed;
-    bottom: 24px;
+    bottom: 28px;
     left: 50%;
     transform: translateX(-50%);
     background: var(--text);
     color: var(--bg);
-    padding: 10px 18px;
-    border-radius: var(--radius);
-    font-size: 0.875rem;
+    padding: 12px 22px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 500;
     display: none;
     z-index: 100;
+    box-shadow: var(--shadow);
+  }
+
+  @media (min-width: 640px) {
+    .container { padding: 0 24px 90px; }
+    .search-card { padding: 28px; }
   }
 </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <div>
+      <div class="logo-block">
         <h1>Import Route Planner</h1>
-        <p>Itinéraires et contacts transitaires — Afrique</p>
+        <p>Itinéraires & contacts transitaires — Afrique</p>
       </div>
-      <button class="theme-btn" id="themeBtn" aria-label="Changer de thème">◐</button>
+      <button class="theme-btn" id="themeBtn" aria-label="Thème">◐</button>
     </header>
 
     <main id="main"></main>
 
-    <div class="disclaimer">
-      Les itinéraires et contacts présentés sont fournis à titre indicatif. Vérifiez toujours les conditions auprès du transitaire et des autorités compétentes avant toute expédition.<br><br>
-      Import Route Planner — Junior GANGNIHESSOU
+    <div class="disclaimer" id="disclaimer">
+      Les itinéraires et contacts sont fournis à titre indicatif. Vérifiez toujours auprès du transitaire et des autorités compétentes avant toute expédition.
     </div>
+    <p class="footer-credit">Import Route Planner — Junior GANGNIHESSOU</p>
   </div>
 
-  <button class="admin-toggle" id="adminBtn" title="Administration">⚙</button>
+  <button class="admin-btn" id="adminBtn" title="Administration">⚙</button>
   <div id="toast"></div>
 
 <script>
@@ -460,21 +546,26 @@ const REGIONS = {
   S: "Afrique australe"
 };
 
-const DEFAULT_ROUTES = [
-  { origin: "Chine", transit: ["Sénégal"], destination: "Gambie", modes: ["Maritime", "Routier"], note: "Entrée via Dakar puis acheminement terrestre." },
-  { origin: "Chine", transit: [], destination: "Gambie", modes: ["Aérien"], note: "Option aérienne directe." },
-  { origin: "Chine", transit: ["Cameroun"], destination: "Tchad", modes: ["Maritime", "Routier"], note: "Port de Douala." },
-  { origin: "Chine", transit: ["Bénin"], destination: "Niger", modes: ["Maritime", "Routier"], note: "Port de Cotonou." },
-  { origin: "Chine", transit: ["Togo"], destination: "Burkina Faso", modes: ["Maritime", "Routier"], note: "Port de Lomé." },
-  { origin: "Chine", transit: ["Côte d'Ivoire"], destination: "Mali", modes: ["Maritime", "Routier"], note: "Via Abidjan ou San-Pédro." },
-  { origin: "Chine", transit: ["Kenya"], destination: "Ouganda", modes: ["Maritime", "Routier"], note: "Port de Mombasa." },
-  { origin: "Chine", transit: ["Tanzanie"], destination: "Zambie", modes: ["Maritime", "Routier"], note: "Port de Dar es Salaam." },
-  { origin: "Chine", transit: ["Sénégal"], destination: "Mauritanie", modes: ["Maritime", "Routier"], note: "Via Dakar, corridor Sénégal-Mauritanie." },
-  { origin: "Chine", transit: ["Sénégal"], destination: "Mali", modes: ["Maritime", "Routier"], note: "Corridor ouest via Dakar." },
-  { origin: "Chine", transit: ["Côte d'Ivoire"], destination: "Burkina Faso", modes: ["Maritime", "Routier"], note: "Via Abidjan." },
-  { origin: "Chine", transit: ["Cameroun"], destination: "République centrafricaine", modes: ["Maritime", "Routier"], note: "Via Douala." },
-  { origin: "Chine", transit: ["Congo"], destination: "République démocratique du Congo", modes: ["Maritime", "Routier"], note: "Via Brazzaville." }
-];
+/* Ports / points d'entrée prioritaires */
+const ENTRY_PORTS = {
+  SN: "Dakar",
+  BJ: "Cotonou",
+  TG: "Lomé",
+  CI: "Abidjan",
+  GH: "Tema / Accra",
+  NG: "Lagos",
+  CM: "Douala",
+  CG: "Pointe-Noire / Brazzaville",
+  KE: "Mombasa",
+  TZ: "Dar es Salaam",
+  ZA: "Durban / Cape Town",
+  AO: "Luanda",
+  MZ: "Maputo",
+  DJ: "Djibouti",
+  MA: "Casablanca / Tanger",
+  TN: "Tunis",
+  EG: "Alexandrie / Port-Saïd"
+};
 
 const DEFAULT_CONTACTS = {
   SN: ["+221753611863"],
@@ -514,17 +605,14 @@ function buildCountries() {
   return map;
 }
 
-let DB = load("irp_v4", null) || {
+let DB = load("irp_v5", null) || {
   countries: buildCountries(),
-  routes: DEFAULT_ROUTES,
   contacts: { ...DEFAULT_CONTACTS }
 };
 
 let byIso = DB.countries;
-let byName = {};
-Object.values(byIso).forEach(c => byName[norm(c.nom)] = c);
 
-function persist() { save("irp_v4", DB); }
+function persist() { save("irp_v5", DB); }
 
 function search(q) {
   q = norm(q);
@@ -540,16 +628,80 @@ function search(q) {
   return out.sort((a, b) => a.score - b.score || a.c.nom.localeCompare(b.c.nom)).slice(0, 8).map(x => x.c);
 }
 
-/**
- * Règles strictes :
- * - Contact direct du pays
- * - Ensuite contacts des pays voisins
- * - Le numéro stocké sous MR n'apparaît QUE pour la Mauritanie
- */
+/* ===== GÉNÉRATION AUTOMATIQUE DES ITINÉRAIRES VIA LES VOISINS ===== */
+function generateRoutes(iso) {
+  const country = byIso[iso];
+  if (!country) return [];
+
+  const routes = [];
+  const seen = new Set();
+
+  // 1. Routes via chaque pays voisin qui a un port d'entrée connu
+  const voisins = country.voisins || [];
+
+  for (const vIso of voisins) {
+    const neighbor = byIso[vIso];
+    if (!neighbor) continue;
+
+    // Priorité aux pays avec ports
+    if (ENTRY_PORTS[vIso]) {
+      const key = vIso;
+      if (!seen.has(key)) {
+        seen.add(key);
+        routes.push({
+          path: `Chine → ${neighbor.nom} → ${country.nom}`,
+          note: `Entrée via ${ENTRY_PORTS[vIso]}, puis acheminement terrestre vers ${country.nom}.`,
+          modes: ["Maritime", "Routier"],
+          priority: 1
+        });
+      }
+    }
+  }
+
+  // 2. Si le pays lui-même a un port, proposer l'entrée directe
+  if (ENTRY_PORTS[iso]) {
+    routes.unshift({
+      path: `Chine → ${country.nom}`,
+      note: `Entrée directe via ${ENTRY_PORTS[iso]}.`,
+      modes: ["Maritime"],
+      priority: 0
+    });
+  }
+
+  // 3. Option aérienne toujours proposée
+  routes.push({
+    path: `Chine → ${country.nom}`,
+    note: "Option aérienne directe (à comparer en coût et délai).",
+    modes: ["Aérien"],
+    priority: 3
+  });
+
+  // 4. Si aucun voisin portuaire, proposer les voisins simples
+  if (routes.filter(r => r.priority <= 1).length === 0) {
+    for (const vIso of voisins.slice(0, 4)) {
+      const neighbor = byIso[vIso];
+      if (!neighbor || seen.has(vIso)) continue;
+      seen.add(vIso);
+      routes.push({
+        path: `Chine → ${neighbor.nom} → ${country.nom}`,
+        note: `Via ${neighbor.nom} (pays limitrophe).`,
+        modes: ["Routier", "Multimodal"],
+        priority: 2
+      });
+    }
+  }
+
+  // Trier par priorité
+  routes.sort((a, b) => a.priority - b.priority);
+  return routes;
+}
+
+/* ===== CONTACTS ===== */
 function resolveContacts(iso) {
   const results = [];
   const seen = new Set();
 
+  // Direct
   if (DB.contacts[iso]?.length) {
     DB.contacts[iso].forEach(num => {
       const clean = num.replace(/\D/g, "");
@@ -563,11 +715,10 @@ function resolveContacts(iso) {
     });
   }
 
+  // Voisins (sauf MR réservé)
   const voisins = byIso[iso]?.voisins || [];
   for (const v of voisins) {
-    if (!DB.contacts[v]?.length) continue;
-    if (v === "MR") continue; // réservé uniquement à la Mauritanie
-
+    if (!DB.contacts[v]?.length || v === "MR") continue;
     DB.contacts[v].forEach(num => {
       const clean = num.replace(/\D/g, "");
       if (!seen.has(clean)) {
@@ -598,9 +749,9 @@ function waLink(num) {
 
 function renderHome() {
   return `
-    <div class="search-box">
-      <label for="q">Pays de destination</label>
-      <input class="search-input" id="q" type="text" placeholder="Rechercher un pays…" autocomplete="off" autofocus>
+    <div class="search-card">
+      <label for="q">Où souhaitez-vous envoyer votre colis ?</label>
+      <input class="search-input" id="q" type="text" placeholder="Ex. Mauritanie, Tchad, Mali, Gambie…" autocomplete="off" autofocus>
       <div class="suggestions" id="sg"></div>
       <p class="error-msg" id="err"></p>
     </div>
@@ -611,61 +762,46 @@ function renderCountry(iso) {
   const c = byIso[iso];
   if (!c) return `<p>Pays introuvable.</p>`;
 
-  const routes = DB.routes.filter(r => norm(r.destination) === norm(c.nom));
+  const routes = generateRoutes(iso);
   const contacts = resolveContacts(iso);
 
-  let autoHtml = "";
-  if (!routes.length && c.voisins.length) {
-    const ports = c.voisins
-      .map(v => byIso[v])
-      .filter(v => v && ["SN","BJ","TG","CI","CM","KE","TZ","CG","GH","NG"].includes(v.iso))
-      .slice(0, 3);
-
-    if (ports.length) {
-      autoHtml = ports.map(p => `
-        <div class="card">
-          <div class="route-path">Chine → ${esc(p.nom)} → ${esc(c.nom)}</div>
-          <div class="route-note">Point d'entrée potentiel via ${esc(p.nom)}.</div>
-          <span class="tag">À vérifier</span>
-        </div>
-      `).join("");
-    }
-  }
-
   const routesHtml = routes.length
-    ? routes.map(r => {
-        const path = [r.origin, ...(r.transit || []), r.destination].join(" → ");
-        return `
-          <div class="card">
-            <div class="route-path">${esc(path)}</div>
-            ${r.note ? `<div class="route-note">${esc(r.note)}</div>` : ""}
-            <div>${(r.modes || []).map(m => `<span class="tag">${esc(m)}</span>`).join("")}</div>
+    ? routes.map(r => `
+        <div class="route-card">
+          <div class="route-path">${esc(r.path)}</div>
+          <div class="route-note">${esc(r.note)}</div>
+          <div class="tags">
+            ${r.modes.map(m => `<span class="tag">${esc(m)}</span>`).join("")}
+            <span class="tag warning">À vérifier</span>
           </div>
-        `;
-      }).join("")
-    : (autoHtml || `<p class="empty-state">Aucune route enregistrée pour ce pays.</p>`);
+        </div>
+      `).join("")
+    : `<div class="empty-state">Aucun itinéraire disponible pour ce pays.</div>`;
 
   const contactsHtml = contacts.length
-    ? `<div class="card">${contacts.map(ct => `
+    ? `<div class="contact-card">${contacts.map(ct => `
         <div class="contact-item">
-          <div class="contact-info">
+          <div>
             <div class="contact-label">${esc(ct.label)}</div>
             <div class="contact-number">${esc(formatPhone(ct.number))}</div>
           </div>
-          <a class="wa-link" href="${waLink(ct.number)}" target="_blank" rel="noopener">WhatsApp</a>
+          <a class="wa-btn" href="${waLink(ct.number)}" target="_blank" rel="noopener">WhatsApp</a>
         </div>
       `).join("")}</div>`
-    : `<p class="empty-state">Aucun contact disponible pour ce pays ni ses voisins.</p>`;
+    : `<div class="empty-state">Aucun contact disponible pour ce pays ni ses voisins.</div>`;
 
   return `
-    <button class="back-link" id="backBtn">← Retour</button>
-    <h2 class="country-title">${esc(c.nom)}</h2>
-    <p class="country-meta">${esc(c.region)} · ${esc(c.capitale)}</p>
+    <button class="back-btn" id="backBtn">← Choisir un autre pays</button>
 
-    <div class="section-title">Itinéraires</div>
+    <div class="country-hero">
+      <h2>${esc(c.nom)}</h2>
+      <p>${esc(c.region)} · Capitale : ${esc(c.capitale)}</p>
+    </div>
+
+    <div class="section-title">Itinéraires possibles</div>
     ${routesHtml}
 
-    <div class="section-title">Contacts</div>
+    <div class="section-title">Contacts à utiliser</div>
     ${contactsHtml}
   `;
 }
@@ -681,31 +817,33 @@ function renderAdmin() {
     .map(([iso, nums]) => {
       const c = byIso[iso];
       return `
-        <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+        <div class="route-card" style="display:flex;justify-content:space-between;align-items:center;gap:12px">
           <div>
-            <strong style="font-size:0.9rem">${c ? esc(c.nom) : iso}</strong>
+            <strong>${c ? esc(c.nom) : iso}</strong>
             <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:4px">
               ${nums.map(n => esc(n)).join(" · ")}
             </div>
           </div>
-          <button class="btn btn-danger" data-del="${iso}">Supprimer</button>
+          <button class="btn-danger" data-del="${iso}">Supprimer</button>
         </div>
       `;
-    }).join("") || `<p class="empty-state">Aucun contact.</p>`;
+    }).join("") || `<div class="empty-state">Aucun contact enregistré.</div>`;
 
   return `
-    <button class="back-link" id="backBtn">← Retour</button>
-    <h2 class="country-title" style="font-size:1.25rem">Administration</h2>
-    <p class="country-meta">Gestion des numéros par pays</p>
+    <button class="back-btn" id="backBtn">← Retour</button>
+    <div class="country-hero" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">
+      <h2>Administration</h2>
+      <p>Gestion des numéros de contact par pays</p>
+    </div>
 
-    <div class="card admin-form">
+    <div class="route-card admin-form">
       <label for="a-iso">Pays</label>
-      <select id="a-iso"><option value="">Sélectionner…</option>${opts}</select>
+      <select id="a-iso"><option value="">Sélectionner un pays…</option>${opts}</select>
 
-      <label for="a-phone">Numéro (indicatif inclus)</label>
+      <label for="a-phone">Numéro (avec indicatif)</label>
       <input type="text" id="a-phone" placeholder="+221 77 000 00 00">
 
-      <button class="btn" id="a-add">Ajouter</button>
+      <button class="btn-primary" id="a-add">Ajouter le numéro</button>
       <p class="error-msg" id="a-err"></p>
     </div>
 
@@ -740,7 +878,7 @@ document.addEventListener("click", e => {
     if (DB.contacts[iso].includes(phone)) { err.textContent = "Numéro déjà enregistré."; return; }
     DB.contacts[iso].push(phone);
     persist();
-    toast("Ajouté");
+    toast("Numéro ajouté");
     render();
     return;
   }
