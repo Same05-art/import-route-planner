@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Import Route Planner</title>
+<style>
+:root{--bg:#f6f7fb;--c:#fff;--t:#0f172a;--m:#64748b;--b:#e2e8f0;--p:#4f46e5;--p2:#eef2ff;--w:#92400e;--wb:#fffbeb}
+[data-theme=dark]{--bg:#0b1020;--c:#141a2e;--t:#e5e7eb;--m:#9aa8c0;--b:#263050;--p:#818cf8;--p2:#1e2447;--w:#fbbf24;--wb:#2a2210}
+*{box-sizing:border-box}body{margin:0;font:15px/1.5 Inter,Poppins,system-ui,sans-serif;background:var(--bg);color:var(--t)}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--c);border-top:1px solid var(--b);z-index:5}
+nav button{flex:1;border:0;background:none;color:var(--m);padding:8px 2px;font-size:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav button span{font-size:18px}nav button.on{color:var(--p);font-weight:600}
+nav .logo{display:none}
+#main{padding:0 16px 90px;max-width:960px;margin:auto}
+header{display:flex;justify-content:space-between;align-items:center;padding:14px 0}
+header h1{font-size:18px;margin:0}header p{margin:0;color:var(--m);font-size:12px}
+button,input,select,textarea{font:inherit;color:var(--t)}
+button{cursor:pointer;border:1px solid var(--b);background:var(--c);border-radius:10px;padding:8px 12px}
+button:hover{border-color:var(--p)}button.pri{background:var(--p);color:#fff;border-color:var(--p)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--p);outline-offset:2px}
+input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--b);border-radius:10px;background:var(--c)}
+.hero{background:var(--c);border:1px solid var(--b);border-radius:16px;padding:22px;margin-bottom:16px;position:relative}
+.hero h2{margin:0 0 10px}#q{font-size:17px;padding:14px}
+#sg{display:flex;flex-direction:column;margin-top:6px}#sg button{text-align:left;border-radius:8px;border-color:transparent}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px}
+.card{background:var(--c);border:1px solid var(--b);border-radius:14px;padding:16px;margin-bottom:12px;animation:in .25s}
+@keyframes in{from{opacity:0;transform:translateY(6px)}}
+.stat b{display:block;font-size:24px}.stat{color:var(--m);font-size:13px}
+.chip{display:inline-block;margin:0 6px 6px 0;border-radius:99px}
+.badge{display:inline-block;font-size:12px;padding:2px 10px;border-radius:99px;background:var(--p2);color:var(--p);margin:2px 4px 2px 0}
+.badge.pi{background:var(--wb);color:var(--w)}
+.top{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.chain{text-align:center;margin:10px 0}.node{display:inline-block;background:var(--p2);border-radius:10px;padding:6px 14px;font-weight:600}.arr{line-height:1.4}
+.meta{color:var(--m);font-size:13px}.act{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.note,.warn{background:var(--wb);color:var(--w);border-radius:10px;padding:10px 12px;font-size:13px}
+.err{color:#dc2626;font-size:13px}.link{border:0;background:none;color:var(--p);padding:0}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.row>*{flex:1;min-width:140px}
+label{font-size:13px;font-weight:600;display:block;margin-top:8px}label.cb{display:inline-flex;gap:6px;align-items:center;margin-right:12px}label.cb input{width:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--b);text-align:left}
+.tw{overflow-x:auto}.sr{position:absolute;left:-9999px}
+.cr{color:var(--p)!important;margin-top:2px!important}
+footer{font-size:12px;color:var(--m);padding:16px 0}
+.ov{position:fixed;inset:0;background:#0008;display:flex;align-items:center;justify-content:center;z-index:20}
+.md{background:var(--c);border-radius:14px;padding:20px;max-width:340px;width:90%}
+#toast{position:fixed;top:14px;right:14px;background:var(--p);color:#fff;padding:10px 16px;border-radius:10px;z-index:30;display:none}
+@media(min-width:800px){nav{top:0;bottom:auto;width:220px;flex-direction:column;border-top:0;border-right:1px solid var(--b);padding:16px 10px}
+nav button{flex:none;flex-direction:row;font-size:14px;gap:10px;padding:10px 12px;text-align:left;border-radius:10px;width:100%}
+nav .logo{display:block;font-weight:700;padding:4px 12px 14px;font-size:15px}
+#main{margin-left:220px;max-width:none;padding:0 32px 30px}.grid{grid-template-columns:repeat(4,1fr)}}
+@media print{nav,header,.act,#sg,footer button{display:none!important}#main{margin:0;padding:0}}
+</style></head><body>
+<nav id="nav" aria-label="Navigation principale"></nav>
+<div id="main"><header><div><h1>🌍 IMPORT ROUTE PLANNER</h1><p>Trouvez des itinéraires alternatifs pour importer vos produits en Afrique.</p><p class="cr">Créé par <b>Junior GANGNIHESSOU</b> · Expert en e-commerce · Plusieurs millions générés grâce à l'e-commerce en Afrique</p></div>
+<button id="th" aria-label="Changer de thème"></button></header>
+<main id="v"></main>
+<footer>⚠️ Les itinéraires présentés sont des pistes de réflexion basées sur les données enregistrées dans l'application. Ils ne constituent pas une confirmation de disponibilité de transport, de dédouanement ou de conformité réglementaire. Vérifiez toujours les conditions auprès d'un transitaire, transporteur et des autorités compétentes avant toute expédition.<br><br>🌍 Import Route Planner — créé par Junior GANGNIHESSOU, expert en e-commerce (plusieurs millions générés grâce à l'e-commerce en Afrique).</footer></div>
+<div id="toast" role="status"></div><div id="modal"></div>
+<script>
+/* ===== DONNÉES : ISO|Nom|Région(O,C,E,N,S)|Capitale|Voisins terrestres (symétrisés au chargement) ===== */
+const RAW=`DZ|Algérie|N|Alger|TN,LY,NE,ML,MR,MA
+MA|Maroc|N|Rabat|DZ
+TN|Tunisie|N|Tunis|DZ,LY
+LY|Libye|N|Tripoli|TN,DZ,NE,TD,SD,EG
+EG|Égypte|N|Le Caire|LY,SD
+SD|Soudan|N|Khartoum|EG,LY,TD,CF,SS,ET,ER
+MR|Mauritanie|O|Nouakchott|DZ,ML,SN
+SN|Sénégal|O|Dakar|MR,ML,GN,GW,GM
+GM|Gambie|O|Banjul|SN
+GW|Guinée-Bissau|O|Bissau|SN,GN
+GN|Guinée|O|Conakry|GW,SN,ML,CI,LR,SL
+SL|Sierra Leone|O|Freetown|GN,LR
+LR|Libéria|O|Monrovia|SL,GN,CI
+CI|Côte d'Ivoire|O|Yamoussoukro|LR,GN,ML,BF,GH
+ML|Mali|O|Bamako|DZ,NE,BF,CI,GN,SN,MR
+BF|Burkina Faso|O|Ouagadougou|ML,NE,BJ,TG,GH,CI
+GH|Ghana|O|Accra|CI,BF,TG
+TG|Togo|O|Lomé|GH,BF,BJ
+BJ|Bénin|O|Porto-Novo|TG,BF,NE,NG
+NE|Niger|O|Niamey|DZ,LY,TD,NG,BJ,BF,ML
+NG|Nigeria|O|Abuja|BJ,NE,TD,CM
+CV|Cap-Vert|O|Praia|
+TD|Tchad|C|N'Djamena|LY,SD,CF,CM,NG,NE
+CM|Cameroun|C|Yaoundé|NG,TD,CF,CG,GQ,GA
+CF|République centrafricaine|C|Bangui|TD,SD,SS,CD,CG,CM
+GQ|Guinée équatoriale|C|Malabo|CM,GA
+GA|Gabon|C|Libreville|GQ,CM,CG
+CG|Congo|C|Brazzaville|GA,CM,CF,CD,AO
+CD|République démocratique du Congo|C|Kinshasa|CG,CF,SS,UG,RW,BI,TZ,ZM,AO
+ST|Sao Tomé-et-Principe|C|São Tomé|
+AO|Angola|C|Luanda|NA,ZM,CD,CG
+BI|Burundi|E|Gitega|RW,TZ,CD
+RW|Rwanda|E|Kigali|UG,TZ,BI,CD
+UG|Ouganda|E|Kampala|SS,KE,TZ,RW,CD
+KE|Kenya|E|Nairobi|SS,ET,SO,UG,TZ
+TZ|Tanzanie|E|Dodoma|KE,UG,RW,BI,CD,ZM,MW,MZ
+ET|Éthiopie|E|Addis-Abeba|ER,DJ,SO,KE,SS,SD
+ER|Érythrée|E|Asmara|SD,ET,DJ
+DJ|Djibouti|E|Djibouti|ER,ET,SO
+SO|Somalie|E|Mogadiscio|DJ,ET,KE
+SS|Soudan du Sud|E|Djouba|SD,ET,KE,UG,CD,CF
+MW|Malawi|E|Lilongwe|TZ,MZ,ZM
+MZ|Mozambique|E|Maputo|TZ,MW,ZM,ZW,ZA,SZ
+MG|Madagascar|E|Antananarivo|
+MU|Maurice|E|Port-Louis|
+SC|Seychelles|E|Victoria|
+KM|Comores|E|Moroni|
+ZM|Zambie|S|Lusaka|CD,TZ,MW,MZ,ZW,NA,AO
+ZW|Zimbabwe|S|Harare|ZM,MZ,ZA,BW
+BW|Botswana|S|Gaborone|NA,ZA,ZW
+NA|Namibie|S|Windhoek|AO,ZM,BW,ZA
+ZA|Afrique du Sud|S|Pretoria|NA,BW,ZW,MZ,SZ,LS
+SZ|Eswatini|S|Mbabane|ZA,MZ
+LS|Lesotho|S|Maseru|ZA`;
+const REG={O:"Afrique de l'Ouest",C:"Afrique centrale",E:"Afrique de l'Est",N:"Afrique du Nord",S:"Afrique australe"};
+const OTH={"Chine":"CN","Turquie":"TR","Émirats arabes unis":"AE","Inde":"IN"};
+const R0=[["Chine",["Sénégal"],"Gambie",["maritime","routier"],"Le Sénégal peut servir de point d'entrée régional potentiel avant l'acheminement vers la Gambie."],
+["Chine",[],"Gambie",["aérien"],"Piste directe par voie aérienne, à comparer avec la route via le Sénégal."],
+["Chine",["Cameroun"],"Tchad",["maritime","routier"],"Le Cameroun (port de Douala) peut être étudié comme point d'entrée vers le Tchad."],
+["Chine",["Bénin"],"Niger",["maritime","routier"],"Le Bénin (port de Cotonou) peut être étudié comme point d'entrée vers le Niger."],
+["Chine",["Togo"],"Burkina Faso",["maritime","routier"],"Le Togo (port de Lomé) peut être étudié comme point d'entrée vers le Burkina Faso."],
+["Chine",["Côte d'Ivoire"],"Mali",["maritime","routier"],"La Côte d'Ivoire peut être étudiée comme point d'entrée vers le Mali."],
+["Chine",["Kenya"],"Ouganda",["maritime","routier"],"Le Kenya (port de Mombasa) peut être étudié comme point d'entrée vers l'Ouganda."],
+["Chine",["Tanzanie"],"Zambie",["maritime","routier"],"La Tanzanie (port de Dar es Salaam) peut être étudiée comme point d'entrée vers la Zambie."]];
+/* ===== OUTILS ===== */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const N=s=>String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+const fl=i=>i?String.fromCodePoint(...[...i].map(c=>127397+c.charCodeAt(0))):'🌐';
+const ld=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
+const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){toast('Sauvegarde locale impossible')}};
+const uid=()=>'x'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',2200)}
+function build(){const m={};RAW.split('\n').forEach(l=>{const[i,n,r,c,v]=l.split('|');m[i]={id:i,nom:n,nomCourt:n,codeISO:i,drapeau:fl(i),region:REG[r],sousRegion:REG[r],capitale:c,paysVoisins:v?v.split(','):[]}});
+Object.values(m).forEach(c=>c.paysVoisins.forEach(v=>{if(m[v]&&!m[v].paysVoisins.includes(c.id))m[v].paysVoisins.push(c.id)}));return Object.values(m)}
+const defR=()=>R0.map((r,i)=>({id:'r'+(i+1),origin:r[0],transit:r[1],destination:r[2],transport:r[3],status:'piste',note:r[4]}));
+let DB=ld('irp_db',null)||{countries:build(),routes:defR()},FAV=ld('irp_fav',[]),HIST=ld('irp_hist',[]),MINE=ld('irp_mine',[]),DRAFT=[],F={reg:'',tr:'',tp:''},CMP='',view='home',par=null,pend=null,CI,NI,KEY,NM;
+function idx(){CI={};NI={};KEY={};NM={};DB.countries.forEach(c=>{CI[c.codeISO]=c;NI[N(c.nom)]=c;NM[c.codeISO]=N(c.nom);KEY[c.codeISO]=N(c.nom+' '+(c.nomCourt||'')+' '+c.codeISO)})}
+idx();
+const save=()=>sv('irp_db',DB);
+const cn=i=>CI[i]?CI[i].nom:i;
+const fn=n=>{const c=NI[N(n)];return c?c.drapeau:fl(OTH[n])};
+const chain=r=>r.chain||[r.origin,...(r.transit||[]),r.destination];
+const isAfr=n=>!!NI[N(n)];
+function find(q){q=N(q);if(!q)return[];const a=[];DB.countries.forEach(c=>{if(KEY[c.codeISO].includes(q))a.push([NM[c.codeISO].startsWith(q)||c.codeISO.toLowerCase()===q?0:1,c])});return a.sort((x,y)=>x[0]-y[0]||x[1].nom.localeCompare(y[1].nom)).slice(0,8).map(x=>x[1])}
+/* ===== COMPOSANTS ===== */
+const TIPS=["Disponibilité d'un transitaire","Transport entre les deux pays","Formalités douanières","Restrictions éventuelles sur le produit","Coût total","Délais","Documents nécessaires"];
+function card(r,k){const ch=chain(r),fav=FAV.includes(r.id),dest=ch[ch.length-1],entry=ch.length>2?ch[1]:dest;
+const typ=ch.length<3&&!isAfr(ch[0])?'International':(isAfr(ch[0])?'Régional':'International + régional');
+const note=r.note||`Cette route peut être étudiée lorsqu'un importateur cherche une solution alternative pour acheminer sa marchandise vers ${dest} via un pays voisin.`;
+return `<article class="card"><div class="top"><b>🚚 ${ch.map(esc).join(' → ')}</b><span class="badge pi">${r.status==='piste'?'Piste à vérifier':esc(r.status||'perso')}</span></div>
+<div class="chain">${ch.map(n=>`<div class="node">${fn(n)} ${esc(n)}</div>`).join('<div class="arr">⬇️</div>')}</div>
+<p class="meta">Point d'entrée : <b>${esc(entry)}</b> · Destination finale : <b>${esc(dest)}</b> · Type de trajet : ${typ}</p>
+<div>${(r.transport||[]).map(t=>`<span class="badge">${esc(t)}</span>`).join('')}</div><p>${esc(note)}</p>
+<details><summary>⚠️ À vérifier</summary><ul>${TIPS.map(t=>`<li>${t}</li>`).join('')}</ul></details>
+<div class="act"><button data-a="fav" data-id="${r.id}">${fav?'★ Favori':'⭐ Ajouter aux favoris'}</button><button data-a="copy" data-id="${r.id}">📋 Copier l'itinéraire</button>
+${k==='admin'?`<button data-a="edit" data-id="${r.id}">✏️ Modifier</button><button data-a="dup" data-id="${r.id}">📋 Dupliquer</button><button data-a="del" data-id="${r.id}">🗑️ Supprimer</button>`:''}
+${k==='mine'?`<button data-a="delmine" data-id="${r.id}">🗑️ Supprimer</button>`:''}</div></article>`}
+const chips=a=>a.length?a.map(i=>`<button class="chip" data-a="country" data-id="${i}">${fl(i)} ${esc(cn(i))}</button>`).join(''):'<p class="meta">Aucun.</p>';
+const opts=(l,s,ph)=>`<option value="">${ph}</option>`+l.map(x=>`<option value="${esc(x[0])}"${x[0]===s?' selected':''}>${esc(x[1])}</option>`).join('');
+const stat=(i,l,v)=>`<div class="card stat"><span>${i}</span> ${l}<b>${v}</b></div>`;
+const exportBar=`<div class="act"><button data-a="csv">📊 Exporter en CSV</button><button data-a="pdf">📄 Exporter en PDF</button></div>`;
+/* ===== VUES ===== */
+const V={
+home:()=>{const l=HIST[0];return `<section class="hero"><h2>Où souhaitez-vous importer ?</h2><label for="q" class="sr">Rechercher un pays</label><input id="q" autocomplete="off" placeholder="Rechercher un pays…"><div id="sg"></div><p id="sge" class="err" role="alert"></p></section>
+<div class="grid">${stat('🌍','Pays disponibles',DB.countries.length)}${stat('🚚','Routes disponibles',DB.routes.length)}${stat('⭐','Mes favoris',FAV.length)}${stat('🔎','Dernière recherche',l?fl(l)+' '+esc(cn(l)):'Non renseigné')}</div>
+<h3>Mes recherches récentes</h3>${HIST.length?chips(HIST):'<p class="meta">Aucune recherche pour le moment.</p>'}`},
+country:id=>{const c=CI[id];if(!c)return '<p>Pays introuvable.</p>';const rs=DB.routes.filter(r=>r.destination===c.nom);
+return `<button class="link" data-a="nav" data-id="home">← Accueil</button><div class="card"><h2>${c.drapeau} ${esc(c.nom)}</h2><p>${esc(c.region)}</p><p>Capitale : <b>${esc(c.capitale)}</b> · Code ISO : <b>${esc(c.codeISO)}</b></p></div>
+<h3>🗺️ Pays voisins</h3>${chips(c.paysVoisins)}<p class="meta">Information géographique : un pays voisin n'est pas forcément une route recommandée.</p>
+<h3>🚚 Routes d'importation possibles</h3><p class="note">Exemples / pistes à vérifier auprès d'un transitaire, transporteur et des autorités compétentes.</p>
+${rs.length?rs.map(r=>card(r)).join('')+exportBar:`<p>Aucune route configurée pour ce pays. Vous pouvez en ajouter dans ⚙️ Gestion.</p>`}`},
+routes:()=>{const rs=flt();const tr=[...new Set(DB.routes.flatMap(r=>r.transit))].sort();
+return `<h2>🚚 Routes</h2><div class="row"><div><label for="f1">Région</label><select id="f1" data-f="reg">${opts(Object.values(REG).map(x=>[x,x]),F.reg,'Toutes')}</select></div>
+<div><label for="f2">Type de route</label><select id="f2" data-f="tp">${opts([['maritime','Maritime'],['routier','Routière'],['aérien','Aérienne'],['multimodal','Multimodale']],F.tp,'Tous')}</select></div>
+<div><label for="f3">Point d'entrée</label><select id="f3" data-f="tr">${opts(tr.map(x=>[x,x]),F.tr,'Tous')}</select></div></div>
+<p class="meta">${rs.length} route(s) — Exemples / pistes à vérifier.</p>${rs.map(r=>card(r)).join('')||'<p>Aucune route ne correspond.</p>'}${exportBar}`},
+compare:()=>{const ds=[...new Set(DB.routes.map(r=>r.destination))].sort();const rs=DB.routes.filter(r=>r.destination===CMP);
+return `<h2>🧮 Comparer les routes</h2><label for="cm">Destination</label><select id="cm" data-f="cmp">${opts(ds.map(x=>[x,x]),CMP,'Choisir…')}</select>
+${CMP?`<div class="card tw"><table><tr><th>Route</th><th>Étapes</th><th>Transport</th><th>Coût estimé</th><th>Délai estimé</th></tr>
+${rs.map(r=>`<tr><td>${chain(r).map(esc).join(' → ')}</td><td>${chain(r).length-1}</td><td>${esc((r.transport||[]).join(', ')||'Non renseigné')}</td>
+<td><input aria-label="Coût estimé" data-c="cout" data-id="${r.id}" value="${esc(r.cout||'')}" placeholder="Non renseigné"></td>
+<td><input aria-label="Délai estimé" data-c="delai" data-id="${r.id}" value="${esc(r.delai||'')}" placeholder="Non renseigné"></td></tr>`).join('')}</table></div>
+<p class="meta">Aucun prix ni délai n'est inventé : renseignez vos propres estimations.</p>`:''}`},
+mine:()=>`<h2>➕ Mon itinéraire</h2><div class="card"><label for="st">Ajouter une étape (pays)</label><div class="row"><input id="st" list="dl" placeholder="Ex. Chine"><button data-a="addst">Ajouter</button></div>
+<datalist id="dl">${[...Object.keys(OTH),...DB.countries.map(c=>c.nom)].map(n=>`<option value="${esc(n)}">`).join('')}</datalist>
+<ol>${DRAFT.map((s,i)=>`<li>${fn(s)} ${esc(s)} <button data-a="rmst" data-id="${i}" aria-label="Retirer ${esc(s)}">✕</button></li>`).join('')}</ol>
+<div class="act"><button class="pri" data-a="savemine">Enregistrer</button><button data-a="clr">Vider</button></div><p id="err" class="err" role="alert"></p></div>
+<h3>Mes itinéraires enregistrés</h3>${MINE.map(m=>card(m,'mine')).join('')||'<p class="meta">Aucun.</p>'}`,
+favs:()=>{const a=[...DB.routes,...MINE].filter(r=>FAV.includes(r.id));return `<h2>⭐ Mes routes favorites</h2>${a.map(r=>card(r)).join('')||'<p>Aucun favori pour le moment.</p>'}`},
+admin:id=>{const e=DB.routes.find(r=>r.id===id)||{transport:[]};
+return `<h2>⚙️ Gestion des routes</h2><div class="card"><h3>${e.id?'Modifier la route':'Nouvelle route'}</h3>
+<label for="ro">Pays d'origine</label><input id="ro" list="dl2" value="${esc(e.origin||'')}"><label for="rt">Pays de transit (séparés par des virgules)</label><input id="rt" value="${esc((e.transit||[]).join(', '))}">
+<label for="rd">Destination</label><select id="rd">${opts(DB.countries.map(c=>[c.nom,c.nom]).sort((a,b)=>a[0].localeCompare(b[0])),e.destination,'Choisir…')}</select>
+<datalist id="dl2">${Object.keys(OTH).map(n=>`<option value="${n}">`).join('')}</datalist>
+<label>Type de transport</label><div>${['maritime','routier','aérien','multimodal'].map(t=>`<label class="cb"><input type="checkbox" name="tp" value="${t}"${e.transport.includes(t)?' checked':''}>${t}</label>`).join('')}</div>
+<label for="rn">Description</label><textarea id="rn" rows="3">${esc(e.note||'')}</textarea><p id="err" class="err" role="alert"></p>
+<div class="act"><button class="pri" data-a="saveroute" data-id="${e.id||''}">${e.id?'Enregistrer':'Ajouter la route'}</button>${e.id?'<button data-a="nav" data-id="admin">Annuler</button>':''}</div></div>
+<div class="card"><h3>Base de données JSON</h3><div class="act"><button data-a="expj">⬇️ Exporter la base</button><button data-a="impj">⬆️ Importer une base JSON</button><button data-a="csv">📊 Exporter CSV</button></div>
+<input type="file" id="imp" accept=".json,application/json" class="sr"></div>
+<h3>${DB.routes.length} route(s)</h3>${DB.routes.map(r=>card(r,'admin')).join('')}`}};
+function flt(){return DB.routes.filter(r=>(!F.reg||(NI[N(r.destination)]||{}).region===F.reg)&&(!F.tr||r.transit.includes(F.tr))&&(!F.tp||(F.tp==='multimodal'?(r.transport.length>1||r.transport.includes('multimodal')):r.transport.includes(F.tp))))}
+/* ===== NAVIGATION ===== */
+const NAV=[['home','🏠','Accueil'],['routes','🚚','Routes'],['compare','🧮','Comparer'],['mine','➕','Mon itinéraire'],['favs','⭐','Favoris'],['admin','⚙️','Gestion']];
+function render(){$('#nav').innerHTML='<div class="logo">🌍 Route Planner</div>'+NAV.map(n=>`<button data-a="nav" data-id="${n[0]}" class="${view===n[0]?'on':''}"><span>${n[1]}</span>${n[2]}</button>`).join('');
+$('#v').innerHTML=V[view](par);$('#th').textContent=document.documentElement.dataset.theme==='dark'?'☀️ Mode clair':'🌙 Mode sombre'}
+function go(v,p){view=v;par=p||null;render();scrollTo(0,0)}
+function pick(i){HIST=[i,...HIST.filter(x=>x!==i)].slice(0,8);sv('irp_hist',HIST);go('country',i)}
+function dl(name,txt,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+function ask(msg,fn){pend=fn;$('#modal').innerHTML=`<div class="ov"><div class="md" role="dialog" aria-modal="true"><p>${msg}</p><div class="act"><button class="pri" data-a="ok">Confirmer</button><button data-a="no">Annuler</button></div></div></div>`}
+function csvOut(){const rs=view==='country'?DB.routes.filter(r=>r.destination===(CI[par]||{}).nom):view==='routes'?flt():DB.routes,q=s=>'"'+String(s??'').replace(/"/g,'""')+'"';
+dl('routes.csv','\ufeff'+['Origine;Transit;Destination;Transport;Statut;Coût;Délai;Note',...rs.map(r=>[r.origin,r.transit.join(' > '),r.destination,r.transport.join(' + '),r.status,r.cout||'Non renseigné',r.delai||'Non renseigné',r.note].map(q).join(';'))].join('\n'),'text/csv')}
+function copy(t){(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).catch(()=>{const x=document.createElement('textarea');x.value=t;document.body.appendChild(x);x.select();document.execCommand('copy');x.remove()}).finally(()=>toast('Itinéraire copié'))}
+/* ===== ÉVÉNEMENTS ===== */
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,id=b.dataset.id;
+const rt=()=>DB.routes.find(r=>r.id===id)||MINE.find(r=>r.id===id);
+if(a==='nav')go(id);else if(a==='country')pick(id);
+else if(a==='fav'){FAV=FAV.includes(id)?FAV.filter(x=>x!==id):[...FAV,id];sv('irp_fav',FAV);toast(FAV.includes(id)?'Ajouté aux favoris':'Retiré des favoris');render()}
+else if(a==='copy'){const r=rt();copy('Itinéraire : '+chain(r).join(' → ')+'\n⚠️ Piste à vérifier auprès d\'un transitaire, transporteur et des autorités compétentes.')}
+else if(a==='csv')csvOut();else if(a==='pdf')print();
+else if(a==='addst'){const v=$('#st').value.trim();if(v){DRAFT.push(v);render()}}
+else if(a==='rmst'){DRAFT.splice(+id,1);render()}else if(a==='clr'){DRAFT=[];render()}
+else if(a==='savemine'){if(DRAFT.length<2){$('#err').textContent='Ajoutez au moins deux étapes (origine et destination).';return}MINE.push({id:uid(),chain:[...DRAFT],status:'perso',transport:[],note:'Itinéraire personnel.'});sv('irp_mine',MINE);DRAFT=[];toast('Itinéraire enregistré');render()}
+else if(a==='delmine')ask('Supprimer cet itinéraire ?',()=>{MINE=MINE.filter(m=>m.id!==id);FAV=FAV.filter(x=>x!==id);sv('irp_mine',MINE);sv('irp_fav',FAV);render()});
+else if(a==='edit')go('admin',id);
+else if(a==='dup'){const r=rt();DB.routes.push({...r,id:uid(),transit:[...r.transit],transport:[...r.transport]});save();toast('Route dupliquée');render()}
+else if(a==='del')ask('Supprimer cette route ?',()=>{DB.routes=DB.routes.filter(r=>r.id!==id);FAV=FAV.filter(x=>x!==id);save();sv('irp_fav',FAV);toast('Route supprimée');render()});
+else if(a==='saveroute'){const o=$('#ro').value.trim(),d=$('#rd').value,t=$('#rt').value.split(',').map(x=>x.trim()).filter(Boolean),tp=[...document.querySelectorAll('[name=tp]:checked')].map(x=>x.value),n=$('#rn').value.trim(),er=$('#err');
+if(!o||!d){er.textContent="L'origine et la destination sont obligatoires.";return}if(!tp.length){er.textContent='Choisissez au moins un type de transport.';return}
+if(id){Object.assign(DB.routes.find(r=>r.id===id),{origin:o,transit:t,destination:d,transport:tp,note:n})}else DB.routes.push({id:uid(),origin:o,transit:t,destination:d,transport:tp,status:'piste',note:n});
+save();par=null;toast(id?'Route modifiée':'Route ajoutée');render()}
+else if(a==='expj')dl('import-route-planner-base.json',JSON.stringify(DB,null,2),'application/json');
+else if(a==='impj')$('#imp').click();
+else if(a==='ok'){const f=pend;pend=null;$('#modal').innerHTML='';f&&f()}else if(a==='no'){pend=null;$('#modal').innerHTML=''}});
+document.addEventListener('change',e=>{const t=e.target;
+if(t.dataset.f){if(t.dataset.f==='cmp')CMP=t.value;else F[t.dataset.f]=t.value;render()}
+else if(t.dataset.c){const r=DB.routes.find(r=>r.id===t.dataset.id);r[t.dataset.c]=t.value.trim();save()}
+else if(t.id==='imp'&&t.files[0]){const fr=new FileReader();fr.onload=()=>{try{let j=JSON.parse(fr.result);if(Array.isArray(j))j={routes:j};let ok=0;
+if(Array.isArray(j.countries)&&j.countries.length){DB.countries=j.countries.map(c=>({...c,paysVoisins:c.paysVoisins||[],drapeau:c.drapeau||fl(c.codeISO)}));ok=1}
+if(Array.isArray(j.routes)){DB.routes=j.routes.map(r=>({status:'piste',note:'',...r,id:r.id||uid(),transit:r.transit||[],transport:r.transport||[]}));ok=1}
+if(!ok)throw 0;idx();save();toast('Base importée');render()}catch(x){toast('Fichier JSON invalide')}};fr.readAsText(t.files[0]);t.value=''}});
+document.addEventListener('input',e=>{if(e.target.id!=='q')return;const l=find(e.target.value);$('#sge').textContent=e.target.value&&!l.length?'Aucun pays trouvé. Essayez un autre nom ou un code ISO.':'';
+$('#sg').innerHTML=l.map(c=>`<button data-a="country" data-id="${c.codeISO}">${c.drapeau} ${esc(c.nom)}</button>`).join('')});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='q'){const l=find(e.target.value);if(l[0])pick(l[0].codeISO)}if(e.key==='Enter'&&e.target.id==='st')$('[data-a=addst]').click();if(e.key==='Escape')$('#modal').innerHTML=''});
+$('#th').onclick=()=>{const d=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=d;sv('irp_theme',d);render()};
+document.documentElement.dataset.theme=ld('irp_theme',matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+render();
+</script></body></html>
