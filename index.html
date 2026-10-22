@@ -108,11 +108,11 @@
     color: var(--primary);
   }
 
-  /* Search */
+  /* Search / Select */
   .search-card {
     background: var(--surface);
     border-radius: var(--radius);
-    padding: 24px;
+    padding: 28px 24px;
     box-shadow: var(--shadow);
     margin-bottom: 28px;
     border: 1px solid var(--border);
@@ -120,111 +120,110 @@
 
   .search-card label {
     display: block;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     font-weight: 600;
     margin-bottom: 10px;
     color: var(--text);
   }
 
+  .select-wrap {
+    position: relative;
+  }
+
   .search-input {
     width: 100%;
-    padding: 14px 16px;
-    font-size: 1rem;
-    border: 2px solid var(--border);
-    border-radius: 12px;
+    padding: 14px 40px 14px 16px;
+    font-size: 0.95rem;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
     background: var(--bg);
     color: var(--text);
     outline: none;
     transition: border-color 0.15s, box-shadow 0.15s;
+    cursor: pointer;
   }
 
   .search-input:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 0 4px var(--primary-soft);
+    box-shadow: 0 0 0 3px var(--primary-soft);
+    cursor: text;
   }
 
   .search-input::placeholder {
     color: var(--text-secondary);
   }
 
-  .suggestions {
-    margin-top: 8px;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid var(--border);
+  .select-arrow {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    pointer-events: none;
+  }
+
+  .dropdown {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 6px);
+    max-height: 280px;
+    overflow-y: auto;
     background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    z-index: 30;
     display: none;
   }
 
-  .suggestions.show { display: block; }
+  .dropdown.show {
+    display: block;
+  }
 
-  .suggestions button {
+  .dropdown-item {
     display: block;
     width: 100%;
     text-align: left;
-    padding: 12px 16px;
+    padding: 11px 16px;
     border: none;
     background: none;
     color: var(--text);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     cursor: pointer;
     border-bottom: 1px solid var(--border);
-    transition: background 0.12s;
+    transition: background 0.1s;
   }
 
-  .suggestions button:last-child { border-bottom: none; }
-  .suggestions button:hover { background: var(--primary-soft); color: var(--primary); }
+  .dropdown-item:last-child {
+    border-bottom: none;
+  }
+
+  .dropdown-item:hover,
+  .dropdown-item.active {
+    background: var(--primary-soft);
+    color: var(--primary);
+  }
+
+  .dropdown-empty {
+    padding: 14px 16px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
 
   .error-msg {
     color: #dc2626;
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     margin-top: 8px;
-    min-height: 1.2em;
+    min-height: 1.1em;
   }
 
-  /* Country list (selection) */
-  .region-block {
-    margin-bottom: 22px;
-  }
-
-  .region-label {
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+  .home-hint {
+    text-align: center;
     color: var(--text-secondary);
-    margin-bottom: 10px;
-  }
-
-  .country-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .country-chip {
-    padding: 10px 14px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    background: var(--surface);
-    color: var(--text);
-    cursor: pointer;
-    transition: 0.15s;
-    box-shadow: var(--shadow-sm);
-  }
-
-  .country-chip:hover {
-    border-color: var(--primary);
-    background: var(--primary-soft);
-    color: var(--primary);
-    transform: translateY(-1px);
-  }
-
-  .country-chip.hidden,
-  .region-block.hidden {
-    display: none;
+    font-size: 0.85rem;
+    margin-top: 8px;
   }
 
   /* Country page */
@@ -807,36 +806,23 @@ function waLink(num) {
 
 function renderHome() {
   const countries = Object.values(byIso).sort((a, b) => a.nom.localeCompare(b.nom));
-  const regions = {};
-  countries.forEach(c => {
-    if (!regions[c.region]) regions[c.region] = [];
-    regions[c.region].push(c);
-  });
-
-  const regionOrder = ["Afrique de l'Ouest", "Afrique centrale", "Afrique de l'Est", "Afrique du Nord", "Afrique australe"];
-
-  let listHtml = regionOrder.map(reg => {
-    const list = regions[reg];
-    if (!list || !list.length) return "";
-    return `
-      <div class="region-block" data-region="${esc(reg)}">
-        <div class="region-label">${esc(reg)}</div>
-        <div class="country-grid">
-          ${list.map(c => `
-            <button type="button" class="country-chip" data-iso="${c.iso}">${esc(c.nom)}</button>
-          `).join("")}
-        </div>
-      </div>
-    `;
-  }).join("");
+  const options = countries.map(c =>
+    `<button type="button" class="dropdown-item" data-iso="${c.iso}">${esc(c.nom)}</button>`
+  ).join("");
 
   return `
     <div class="search-card">
-      <label for="q">Choisissez le pays de destination</label>
-      <input class="search-input" id="q" type="text" placeholder="Filtrer les pays…" autocomplete="off">
+      <label for="q">Pays de destination</label>
+      <div class="select-wrap">
+        <input class="search-input" id="q" type="text" placeholder="Sélectionner un pays…" autocomplete="off" readonly>
+        <span class="select-arrow">▼</span>
+        <div class="dropdown" id="dropdown">
+          <div id="dropdown-list">${options}</div>
+        </div>
+      </div>
       <p class="error-msg" id="err"></p>
     </div>
-    <div id="country-list">${listHtml}</div>
+    <p class="home-hint">Cliquez sur le champ pour afficher la liste des pays, puis sélectionnez votre destination.</p>
   `;
 }
 
@@ -974,35 +960,69 @@ document.addEventListener("click", e => {
   }
 });
 
+function openDropdown() {
+  const dd = $("#dropdown");
+  const input = $("#q");
+  if (!dd || !input) return;
+  dd.classList.add("show");
+  input.removeAttribute("readonly");
+  input.placeholder = "Rechercher un pays…";
+  input.focus();
+  filterDropdown("");
+}
+
+function closeDropdown() {
+  const dd = $("#dropdown");
+  const input = $("#q");
+  if (!dd || !input) return;
+  dd.classList.remove("show");
+  input.setAttribute("readonly", "readonly");
+  input.value = "";
+  input.placeholder = "Sélectionner un pays…";
+}
+
+function filterDropdown(q) {
+  q = norm(q);
+  const list = $("#dropdown-list");
+  if (!list) return;
+  const countries = Object.values(byIso).sort((a, b) => a.nom.localeCompare(b.nom));
+  const filtered = q
+    ? countries.filter(c => norm(c.nom).includes(q) || c.iso.toLowerCase() === q)
+    : countries;
+
+  if (!filtered.length) {
+    list.innerHTML = `<div class="dropdown-empty">Aucun pays trouvé</div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(c =>
+    `<button type="button" class="dropdown-item" data-iso="${c.iso}">${esc(c.nom)}</button>`
+  ).join("");
+}
+
+document.addEventListener("focusin", e => {
+  if (e.target.id === "q") openDropdown();
+});
+
 document.addEventListener("input", e => {
   if (e.target.id !== "q") return;
-  const q = norm(e.target.value);
-  const chips = document.querySelectorAll(".country-chip");
-  const regions = document.querySelectorAll(".region-block");
-  let visible = 0;
-
-  chips.forEach(chip => {
-    const name = norm(chip.textContent);
-    const match = !q || name.includes(q);
-    chip.classList.toggle("hidden", !match);
-    if (match) visible++;
-  });
-
-  regions.forEach(block => {
-    const hasVisible = block.querySelector(".country-chip:not(.hidden)");
-    block.classList.toggle("hidden", !hasVisible);
-  });
-
+  filterDropdown(e.target.value);
   const err = $("#err");
-  if (err) err.textContent = q && visible === 0 ? "Aucun pays trouvé." : "";
+  if (err) err.textContent = "";
 });
 
 document.addEventListener("click", e => {
   const btn = e.target.closest("[data-iso]");
-  if (btn) {
+  if (btn && btn.classList.contains("dropdown-item")) {
     currentIso = btn.dataset.iso;
     view = "country";
     render();
+    return;
+  }
+
+  // Clic hors du sélecteur → fermer
+  if (!$(".select-wrap")?.contains(e.target)) {
+    closeDropdown();
   }
 });
 
