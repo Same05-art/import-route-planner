@@ -523,7 +523,6 @@
     <p class="footer-credit">Import Route Planner — Junior GANGNIHESSOU</p>
   </div>
 
-  <button class="admin-btn" id="adminBtn" title="Administration">⚙</button>
   <div id="toast"></div>
 
 <script>
@@ -874,57 +873,10 @@ function renderCountry(iso) {
   `;
 }
 
-function renderAdmin() {
-  const opts = Object.values(byIso)
-    .sort((a, b) => a.nom.localeCompare(b.nom))
-    .map(c => `<option value="${c.iso}">${esc(c.nom)}</option>`)
-    .join("");
-
-  const list = Object.entries(DB.contacts)
-    .filter(([, nums]) => nums?.length)
-    .map(([iso, nums]) => {
-      const c = byIso[iso];
-      return `
-        <div class="route-card" style="display:flex;justify-content:space-between;align-items:center;gap:12px">
-          <div>
-            <strong>${c ? esc(c.nom) : iso}</strong>
-            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:4px">
-              ${nums.map(n => esc(n)).join(" · ")}
-            </div>
-          </div>
-          <button class="btn-danger" data-del="${iso}">Supprimer</button>
-        </div>
-      `;
-    }).join("") || `<div class="empty-state">Aucun contact enregistré.</div>`;
-
-  return `
-    <button class="back-btn" id="backBtn">← Retour</button>
-    <div class="country-hero" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">
-      <h2>Administration</h2>
-      <p>Gestion des numéros de contact par pays</p>
-    </div>
-
-    <div class="route-card admin-form">
-      <label for="a-iso">Pays</label>
-      <select id="a-iso"><option value="">Sélectionner un pays…</option>${opts}</select>
-
-      <label for="a-phone">Numéro (avec indicatif)</label>
-      <input type="text" id="a-phone" placeholder="+221 77 000 00 00">
-
-      <button class="btn-primary" id="a-add">Ajouter le numéro</button>
-      <p class="error-msg" id="a-err"></p>
-    </div>
-
-    <div class="section-title">Contacts enregistrés</div>
-    ${list}
-  `;
-}
-
 function render() {
   const el = $("#main");
   if (view === "home") el.innerHTML = renderHome();
   else if (view === "country") el.innerHTML = renderCountry(currentIso);
-  else if (view === "admin") el.innerHTML = renderAdmin();
   window.scrollTo(0, 0);
 }
 
@@ -932,30 +884,6 @@ document.addEventListener("click", e => {
   if (e.target.id === "backBtn") {
     view = "home";
     currentIso = null;
-    render();
-    return;
-  }
-
-  if (e.target.id === "a-add") {
-    const iso = $("#a-iso").value;
-    const phone = $("#a-phone").value.trim();
-    const err = $("#a-err");
-    if (!iso) { err.textContent = "Sélectionnez un pays."; return; }
-    if (!phone || phone.replace(/\D/g, "").length < 8) { err.textContent = "Numéro invalide."; return; }
-    if (!DB.contacts[iso]) DB.contacts[iso] = [];
-    if (DB.contacts[iso].includes(phone)) { err.textContent = "Numéro déjà enregistré."; return; }
-    DB.contacts[iso].push(phone);
-    persist();
-    toast("Numéro ajouté");
-    render();
-    return;
-  }
-
-  const del = e.target.closest("[data-del]");
-  if (del) {
-    delete DB.contacts[del.dataset.del];
-    persist();
-    toast("Supprimé");
     render();
   }
 });
@@ -1030,11 +958,6 @@ $("#themeBtn").onclick = () => {
   const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
   document.documentElement.dataset.theme = next;
   save("irp_theme", next);
-};
-
-$("#adminBtn").onclick = () => {
-  view = view === "admin" ? "home" : "admin";
-  render();
 };
 
 document.documentElement.dataset.theme = load("irp_theme",
