@@ -182,6 +182,51 @@
     min-height: 1.2em;
   }
 
+  /* Country list (selection) */
+  .region-block {
+    margin-bottom: 22px;
+  }
+
+  .region-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+  }
+
+  .country-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .country-chip {
+    padding: 10px 14px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    transition: 0.15s;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .country-chip:hover {
+    border-color: var(--primary);
+    background: var(--primary-soft);
+    color: var(--primary);
+    transform: translateY(-1px);
+  }
+
+  .country-chip.hidden,
+  .region-block.hidden {
+    display: none;
+  }
+
   /* Country page */
   .back-btn {
     display: inline-flex;
@@ -568,13 +613,15 @@ const ENTRY_PORTS = {
 };
 
 const DEFAULT_CONTACTS = {
-  SN: ["+221753611863"],
+  SN: ["+221753611863", "+221786848592"],
   MR: ["+221710603746"],
   GN: ["+8619566834232", "+224627288325"],
   CG: ["+242069228237"],
   CM: ["+237674238544"],
   SL: ["+232674238544"],
-  TD: ["+23566632049"]
+  TD: ["+23566632049"],
+  GM: ["+2207165888"],
+  CI: ["+2250708457882", "+2250704761903", "+2250704947161", "+2250788880795"]
 };
 
 const $ = s => document.querySelector(s);
@@ -605,14 +652,23 @@ function buildCountries() {
   return map;
 }
 
-let DB = load("irp_v5", null) || {
-  countries: buildCountries(),
-  contacts: { ...DEFAULT_CONTACTS }
-};
+let DB = load("irp_v6", null);
+if (!DB) {
+  DB = { countries: buildCountries(), contacts: { ...DEFAULT_CONTACTS } };
+} else {
+  // Fusionner les nouveaux contacts par défaut sans écraser ceux déjà ajoutés
+  Object.entries(DEFAULT_CONTACTS).forEach(([iso, nums]) => {
+    if (!DB.contacts[iso]) DB.contacts[iso] = [];
+    nums.forEach(n => {
+      if (!DB.contacts[iso].includes(n)) DB.contacts[iso].push(n);
+    });
+  });
+  if (!DB.countries || !Object.keys(DB.countries).length) DB.countries = buildCountries();
+}
 
 let byIso = DB.countries;
 
-function persist() { save("irp_v5", DB); }
+function persist() { save("irp_v6", DB); }
 
 function search(q) {
   q = norm(q);
@@ -748,13 +804,37 @@ function waLink(num) {
 }
 
 function renderHome() {
+  const countries = Object.values(byIso).sort((a, b) => a.nom.localeCompare(b.nom));
+  const regions = {};
+  countries.forEach(c => {
+    if (!regions[c.region]) regions[c.region] = [];
+    regions[c.region].push(c);
+  });
+
+  const regionOrder = ["Afrique de l'Ouest", "Afrique centrale", "Afrique de l'Est", "Afrique du Nord", "Afrique australe"];
+
+  let listHtml = regionOrder.map(reg => {
+    const list = regions[reg];
+    if (!list || !list.length) return "";
+    return `
+      <div class="region-block" data-region="${esc(reg)}">
+        <div class="region-label">${esc(reg)}</div>
+        <div class="country-grid">
+          ${list.map(c => `
+            <button type="button" class="country-chip" data-iso="${c.iso}">${esc(c.nom)}</button>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  }).join("");
+
   return `
     <div class="search-card">
-      <label for="q">Où souhaitez-vous envoyer votre colis ?</label>
-      <input class="search-input" id="q" type="text" placeholder="Ex. Mauritanie, Tchad, Mali, Gambie…" autocomplete="off" autofocus>
-      <div class="suggestions" id="sg"></div>
+      <label for="q">Choisissez le pays de destination</label>
+      <input class="search-input" id="q" type="text" placeholder="Filtrer les pays…" autocomplete="off">
       <p class="error-msg" id="err"></p>
     </div>
+    <div id="country-list">${listHtml}</div>
   `;
 }
 
@@ -894,22 +974,25 @@ document.addEventListener("click", e => {
 
 document.addEventListener("input", e => {
   if (e.target.id !== "q") return;
-  const q = e.target.value;
-  const list = search(q);
-  const box = $("#sg");
+  const q = norm(e.target.value);
+  const chips = document.querySelectorAll(".country-chip");
+  const regions = document.querySelectorAll(".region-block");
+  let visible = 0;
+
+  chips.forEach(chip => {
+    const name = norm(chip.textContent);
+    const match = !q || name.includes(q);
+    chip.classList.toggle("hidden", !match);
+    if (match) visible++;
+  });
+
+  regions.forEach(block => {
+    const hasVisible = block.querySelector(".country-chip:not(.hidden)");
+    block.classList.toggle("hidden", !hasVisible);
+  });
+
   const err = $("#err");
-
-  err.textContent = q && !list.length ? "Aucun pays trouvé." : "";
-
-  if (list.length) {
-    box.classList.add("show");
-    box.innerHTML = list.map(c =>
-      `<button type="button" data-iso="${c.iso}">${esc(c.nom)}</button>`
-    ).join("");
-  } else {
-    box.classList.remove("show");
-    box.innerHTML = "";
-  }
+  if (err) err.textContent = q && visible === 0 ? "Aucun pays trouvé." : "";
 });
 
 document.addEventListener("click", e => {
@@ -918,17 +1001,6 @@ document.addEventListener("click", e => {
     currentIso = btn.dataset.iso;
     view = "country";
     render();
-  }
-});
-
-document.addEventListener("keydown", e => {
-  if (e.key === "Enter" && e.target.id === "q") {
-    const list = search(e.target.value);
-    if (list[0]) {
-      currentIso = list[0].iso;
-      view = "country";
-      render();
-    }
   }
 });
 
