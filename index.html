@@ -594,6 +594,7 @@ const REGIONS = {
 /* Ports / points d'entrée prioritaires */
 const ENTRY_PORTS = {
   SN: "Dakar",
+  GM: "Banjul",
   BJ: "Cotonou",
   TG: "Lomé",
   CI: "Abidjan",
@@ -601,6 +602,9 @@ const ENTRY_PORTS = {
   NG: "Lagos",
   CM: "Douala",
   CG: "Pointe-Noire / Brazzaville",
+  GN: "Conakry",
+  SL: "Freetown",
+  LR: "Monrovia",
   KE: "Mombasa",
   TZ: "Dar es Salaam",
   ZA: "Durban / Cape Town",
@@ -652,11 +656,10 @@ function buildCountries() {
   return map;
 }
 
-let DB = load("irp_v6", null);
+let DB = load("irp_v7", null);
 if (!DB) {
   DB = { countries: buildCountries(), contacts: { ...DEFAULT_CONTACTS } };
 } else {
-  // Fusionner les nouveaux contacts par défaut sans écraser ceux déjà ajoutés
   Object.entries(DEFAULT_CONTACTS).forEach(([iso, nums]) => {
     if (!DB.contacts[iso]) DB.contacts[iso] = [];
     nums.forEach(n => {
@@ -668,7 +671,7 @@ if (!DB) {
 
 let byIso = DB.countries;
 
-function persist() { save("irp_v6", DB); }
+function persist() { save("irp_v7", DB); }
 
 function search(q) {
   q = norm(q);
@@ -684,70 +687,69 @@ function search(q) {
   return out.sort((a, b) => a.score - b.score || a.c.nom.localeCompare(b.c.nom)).slice(0, 8).map(x => x.c);
 }
 
-/* ===== GÉNÉRATION AUTOMATIQUE DES ITINÉRAIRES VIA LES VOISINS ===== */
+/* ===== GÉNÉRATION AUTOMATIQUE DES ITINÉRAIRES ===== */
 function generateRoutes(iso) {
   const country = byIso[iso];
   if (!country) return [];
 
   const routes = [];
   const seen = new Set();
-
-  // 1. Routes via chaque pays voisin qui a un port d'entrée connu
+  const hasLocalContact = !!(DB.contacts[iso]?.length);
   const voisins = country.voisins || [];
 
-  for (const vIso of voisins) {
-    const neighbor = byIso[vIso];
-    if (!neighbor) continue;
-
-    // Priorité aux pays avec ports
-    if (ENTRY_PORTS[vIso]) {
-      const key = vIso;
-      if (!seen.has(key)) {
-        seen.add(key);
-        routes.push({
-          path: `Chine → ${neighbor.nom} → ${country.nom}`,
-          note: `Entrée via ${ENTRY_PORTS[vIso]}, puis acheminement terrestre vers ${country.nom}.`,
-          modes: ["Maritime", "Routier"],
-          priority: 1
-        });
-      }
-    }
-  }
-
-  // 2. Si le pays lui-même a un port, proposer l'entrée directe
-  if (ENTRY_PORTS[iso]) {
-    routes.unshift({
+  // 1. Route directe Chine → pays
+  //    Toujours proposée si le pays a un port OU un contact transitaire local
+  if (ENTRY_PORTS[iso] || hasLocalContact) {
+    const portNote = ENTRY_PORTS[iso]
+      ? `Entrée directe via ${ENTRY_PORTS[iso]}.`
+      : `Envoi direct vers ${country.nom} (contact local disponible).`;
+    routes.push({
       path: `Chine → ${country.nom}`,
-      note: `Entrée directe via ${ENTRY_PORTS[iso]}.`,
-      modes: ["Maritime"],
+      note: portNote,
+      modes: ENTRY_PORTS[iso] ? ["Maritime", "Routier"] : ["Maritime", "Routier", "Aérien"],
       priority: 0
     });
   }
 
-  // 3. Option aérienne toujours proposée
-  routes.push({
-    path: `Chine → ${country.nom}`,
-    note: "Option aérienne directe (à comparer en coût et délai).",
-    modes: ["Aérien"],
-    priority: 3
-  });
+  // 2. Routes via pays voisins (ports prioritaires)
+  for (const vIso of voisins) {
+    const neighbor = byIso[vIso];
+    if (!neighbor || seen.has(vIso)) continue;
 
-  // 4. Si aucun voisin portuaire, proposer les voisins simples
-  if (routes.filter(r => r.priority <= 1).length === 0) {
-    for (const vIso of voisins.slice(0, 4)) {
-      const neighbor = byIso[vIso];
-      if (!neighbor || seen.has(vIso)) continue;
+    if (ENTRY_PORTS[vIso]) {
       seen.add(vIso);
       routes.push({
         path: `Chine → ${neighbor.nom} → ${country.nom}`,
-        note: `Via ${neighbor.nom} (pays limitrophe).`,
-        modes: ["Routier", "Multimodal"],
-        priority: 2
+        note: `Entrée via ${ENTRY_PORTS[vIso]}, puis acheminement vers ${country.nom}.`,
+        modes: ["Maritime", "Routier"],
+        priority: 1
       });
     }
   }
 
-  // Trier par priorité
+  // 3. Autres voisins (sans grand port)
+  for (const vIso of voisins) {
+    const neighbor = byIso[vIso];
+    if (!neighbor || seen.has(vIso)) continue;
+    seen.add(vIso);
+    routes.push({
+      path: `Chine → ${neighbor.nom} → ${country.nom}`,
+      note: `Via ${neighbor.nom} (pays limitrophe).`,
+      modes: ["Routier", "Multimodal"],
+      priority: 2
+    });
+  }
+
+  // 4. Option aérienne (si pas déjà couverte par la route directe)
+  if (!hasLocalContact && !ENTRY_PORTS[iso]) {
+    routes.push({
+      path: `Chine → ${country.nom}`,
+      note: "Option aérienne directe (à comparer en coût et délai).",
+      modes: ["Aérien"],
+      priority: 3
+    });
+  }
+
   routes.sort((a, b) => a.priority - b.priority);
   return routes;
 }
